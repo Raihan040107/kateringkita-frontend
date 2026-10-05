@@ -10,9 +10,9 @@ import { fontClass } from "@/lib/fonts";
 const ops = [
   { href: "/dashboard", label: "Dashboard Live", icon: LayoutGrid, badge: 2 },
   { href: "/menu", label: "Kelola Menu & Stok", icon: BookOpen },
-  { href: "/copilot", label: "Copilot HPP Simulator", icon: Calculator },
+  // { href: "/copilot", label: "Copilot HPP Simulator", icon: Calculator },
   { href: "/riwayat", label: "Riwayat & Laporan Keuangan", icon: BarChart3 },
-  { href: "/template-wa", label: "Template WA & Bot", icon: MessageCircle },
+  // { href: "/template-wa", label: "Template WA & Bot", icon: MessageCircle },
 ];
 
 export default function Shell({ title, children, actions }: { title: string; children: React.ReactNode; actions?: React.ReactNode }) {

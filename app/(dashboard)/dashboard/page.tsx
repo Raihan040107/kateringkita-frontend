@@ -35,7 +35,7 @@ export default function DashboardLive() {
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari #KK-... atau nama pemesan..." className="flex-1 outline-none bg-transparent" />
         <span className={`text-[10px] text-gray-400 border rounded px-1.5 ${mono}`}>Ctrl+K</span>
       </div>
-      <button onClick={addOrder} className="h-8 px-3 rounded-lg border border-amber-300 bg-amber-50 text-amber-700 text-[13px] font-medium flex items-center gap-1.5">
+      {/* <button onClick={addOrder} className="h-8 px-3 rounded-lg border border-amber-300 bg-amber-50 text-amber-700 text-[13px] font-medium flex items-center gap-1.5">
         <Plus size={14} />
         Simulasi Order
       </button>
@@ -48,7 +48,7 @@ export default function DashboardLive() {
       <Link href="/template-wa" className="h-8 px-3 rounded-lg bg-orange-600 text-white text-[13px] font-semibold flex items-center gap-1.5">
         <FileText size={14} />
         Slip Order <ArrowRight size={13} />
-      </Link>
+      </Link> */}
     </>
   );
   return (
