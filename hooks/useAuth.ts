@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser, registerMerchant } from "@/services/authService";
+import { loginUser, registerMerchant, logoutUser } from "@/services/authService";
 import { LoginPayload, RegisterPayload } from "@/types/auth";
 
 export const useAuth = () => {
@@ -32,7 +32,7 @@ export const useAuth = () => {
     setError(null);
     try {
       const res = await registerMerchant(payload);
-      alert(res.message || "Registrasi Berhasil!");
+      alert(res.message || "Registrasi Berhasil! Silakan Login.");
       router.push("/login");
     } catch (err: any) {
       setError(err.response?.data?.message || "Registrasi gagal, periksa data Anda.");
@@ -41,5 +41,15 @@ export const useAuth = () => {
     }
   };
 
-  return { handleLogin, handleRegister, loading, error };
+  const handleLogout = async () => {
+    try {
+      await logoutUser().catch(() => {});
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      router.push("/login");
+    }
+  };
+
+  return { handleLogin, handleRegister, handleLogout, loading, error };
 };
