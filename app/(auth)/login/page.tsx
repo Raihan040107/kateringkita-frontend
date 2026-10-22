@@ -1,25 +1,39 @@
-
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import { HelpCircle, Check, Lock, MessageCircle, Sparkles, TrendingUp } from "lucide-react";
+import { HelpCircle, Check, Lock, MessageCircle, TrendingUp } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import Logo from "@/components/Logo";
 import { fontClass } from "@/lib/fonts";
+import { validateIdentifier } from "@/lib/validators";
 
 export default function LoginPage() {
   // ===== LOGIKA (tidak diubah) =====
   const { handleLogin, loading, error } = useAuth();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleLogin({ identifier, password });
-  };
   // =================================
   const [remember, setRemember] = useState(true);
+
+  // ===== VALIDASI =====
+  const [touched, setTouched] = useState({ identifier: false, password: false });
+  const idError = validateIdentifier(identifier);
+  const pwError = password ? undefined : "Kata sandi wajib diisi.";
+  const showId = touched.identifier ? idError : undefined;
+  const showPw = touched.password ? pwError : undefined;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setTouched({ identifier: true, password: true });
+    if (idError) return document.getElementById("identifier")?.focus();
+    if (pwError) return document.getElementById("password")?.focus();
+    handleLogin({ identifier: identifier.trim(), password });
+  };
+
+  const base = "w-full h-12 bg-slate-50 border rounded-xl px-4 text-[14px] focus:ring-2 focus:outline-none";
+  const ok = "border-gray-200 focus:ring-orange-500";
+  const bad = "border-red-300 bg-red-50/40 focus:ring-red-400";
 
   return (
     <div className={`${fontClass} min-h-screen bg-[#f8fafc] flex flex-col text-gray-900`}>
@@ -103,33 +117,67 @@ export default function LoginPage() {
           <h2 className="mt-2 text-[30px] font-extrabold tracking-tight">Manajemen Dapur</h2>
           <p className="mt-2 text-[14px] leading-6 text-gray-500">Akses kontrol stok harian, live antrean kantin, dan laporan keuangan stand katering Anda.</p>
 
-          {error && <div className="mt-4 bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-200">{error}</div>}
+          {error && (
+            <div role="alert" className="mt-4 bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-200">
+              {error}
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
             <div>
-              <label className="block text-[14px] font-semibold mb-2">Nomor / Email Merchant</label>
+              <label htmlFor="identifier" className="block text-[14px] font-semibold mb-2">
+                Nomor / Email Merchant
+              </label>
               <input
+                id="identifier"
+                name="identifier"
                 type="text"
+                inputMode="email"
+                autoComplete="username"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                required
+                onBlur={() => setTouched((t) => ({ ...t, identifier: true }))}
+                aria-invalid={!!showId}
+                aria-describedby={showId ? "identifier-err" : "identifier-hint"}
+                maxLength={100}
                 placeholder="08123456789 atau user@mail.com"
-                className="w-full h-12 bg-slate-50 border border-gray-200 rounded-xl px-4 text-[14px] focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                className={`${base} ${showId ? bad : ok}`}
               />
+              {showId ? (
+                <p id="identifier-err" role="alert" className="mt-1.5 text-[12px] text-red-600">
+                  {showId}
+                </p>
+              ) : (
+                <p id="identifier-hint" className="mt-1.5 text-[12px] text-gray-400">
+                  Nomor WhatsApp (10–13 digit, diawali 08) atau email.
+                </p>
+              )}
             </div>
             <div>
               <div className="flex justify-between mb-2">
-                <label className="text-[14px] font-semibold">Kata Sandi</label>
+                <label htmlFor="password" className="text-[14px] font-semibold">
+                  Kata Sandi
+                </label>
                 <span className="text-[13px] font-semibold text-orange-600">Lupa PIN?</span>
               </div>
               <input
+                id="password"
+                name="password"
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-                className="w-full h-12 bg-slate-50 border border-gray-200 rounded-xl px-4 text-[14px] focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+                aria-invalid={!!showPw}
+                aria-describedby={showPw ? "password-err" : undefined}
+                placeholder="Masukkan kata sandi"
+                className={`${base} ${showPw ? bad : ok}`}
               />
+              {showPw && (
+                <p id="password-err" role="alert" className="mt-1.5 text-[12px] text-red-600">
+                  {showPw}
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-between text-[13px]">
               <label className="flex items-center gap-2 cursor-pointer" onClick={() => setRemember(!remember)}>
